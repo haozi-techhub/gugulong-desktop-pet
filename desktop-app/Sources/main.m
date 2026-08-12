@@ -368,7 +368,9 @@ typedef void (^CodexUpdateHandler)(PetState state, NSString *sourcePath);
     self.petView.windowMoved = ^{ [weakSelf petDidMove]; };
     [self createBubbleWindow];
     [self applyWindowLevel];
-    self.statusItem = [[NSStatusBar systemStatusBar] statusItemWithLength:NSSquareStatusItemLength];
+    // A variable-width item keeps the dedicated silhouette visible while the
+    // short product name makes the control unmistakable on crowded menu bars.
+    self.statusItem = [[NSStatusBar systemStatusBar] statusItemWithLength:NSVariableStatusItemLength];
     self.statusItem.visible = YES;
     // Load the 1x template resource and let AppKit select its @2x representation.
     // Loading the @2x file as the logical source makes macOS scale it twice on
@@ -384,7 +386,9 @@ typedef void (^CodexUpdateHandler)(PetState state, NSString *sourcePath);
         statusImage.template = YES;
         statusImage.size = NSMakeSize(18, 18);
         self.statusItem.button.image = statusImage;
-        self.statusItem.button.imagePosition = NSImageOnly;
+        self.statusItem.button.imagePosition = NSImageLeft;
+        self.statusItem.button.title = @"咕咕龙";
+        self.statusItem.button.font = [NSFont systemFontOfSize:11 weight:NSFontWeightSemibold];
         self.statusItem.button.accessibilityLabel = @"咕咕龙";
     } else {
         self.statusItem.button.title = @"咕咕龙";

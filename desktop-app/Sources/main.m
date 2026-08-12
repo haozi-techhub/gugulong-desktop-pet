@@ -300,6 +300,7 @@ typedef void (^CodexUpdateHandler)(PetState state, NSString *sourcePath);
 @property(nonatomic) BOOL petHovering;
 @property(nonatomic) CGFloat scale;
 @property(nonatomic, strong) NSStatusItem *statusItem;
+@property(nonatomic, strong) NSWindow *visibleMenuBarWindow;
 @property(nonatomic, strong) NSWindow *settingsWindow;
 @property(nonatomic, strong) CodexSessionWatcher *watcher;
 @property(nonatomic) PetState lastCodexState;
@@ -309,7 +310,73 @@ typedef void (^CodexUpdateHandler)(PetState state, NSString *sourcePath);
 @property(nonatomic, strong) NSDate *lastBubbleShownAt;
 @end
 
+static NSImage *GugulongStatusBrandImage(NSImage *icon) {
+    if (!icon) return nil;
+    NSSize canvasSize = NSMakeSize(68, 20);
+    NSImage *brand = [[NSImage alloc] initWithSize:canvasSize];
+    [brand lockFocus];
+    [[NSColor clearColor] setFill];
+    NSRectFill(NSMakeRect(0, 0, canvasSize.width, canvasSize.height));
+
+    // Draw one indivisible template image. This avoids a macOS status-button
+    // layout edge case where the text survives but the separate icon vanishes.
+    [icon drawInRect:NSMakeRect(1, 1, 18, 18)
+            fromRect:NSZeroRect
+           operation:NSCompositingOperationSourceOver
+            fraction:1.0
+      respectFlipped:YES
+               hints:nil];
+    NSDictionary *attributes = @{
+        NSFontAttributeName: [NSFont systemFontOfSize:11 weight:NSFontWeightSemibold],
+        NSForegroundColorAttributeName: NSColor.blackColor
+    };
+    [@"咕咕龙" drawAtPoint:NSMakePoint(23, 3) withAttributes:attributes];
+    [brand unlockFocus];
+    brand.template = YES;
+    return brand;
+}
+
+@interface GugulongVisibleMenuView : NSView
+@property(nonatomic, strong) NSMenu *controlMenu;
+@end
+
+@implementation GugulongVisibleMenuView
+- (BOOL)isFlipped { return YES; }
+- (void)drawRect:(NSRect)dirtyRect {
+    [super drawRect:dirtyRect];
+    [@"🦖 咕咕龙" drawAtPoint:NSMakePoint(2, 3) withAttributes:@{
+        NSFontAttributeName: [NSFont systemFontOfSize:12 weight:NSFontWeightSemibold],
+        NSForegroundColorAttributeName: NSColor.whiteColor
+    }];
+}
+- (void)mouseDown:(NSEvent *)event {
+    if (self.controlMenu) [self.controlMenu popUpMenuPositioningItem:nil atLocation:NSMakePoint(0, NSMaxY(self.bounds)) inView:self];
+}
+- (void)rightMouseDown:(NSEvent *)event { [self mouseDown:event]; }
+@end
+
+
 @implementation AppDelegate
+
+- (void)createVisibleMenuBarWindowWithMenu:(NSMenu *)menu {
+    NSScreen *screen = NSScreen.mainScreen ?: NSScreen.screens.firstObject;
+    if (!screen) return;
+    NSRect frame = screen.frame;
+    NSRect windowFrame = NSMakeRect(NSMaxX(frame) - 330, NSMaxY(frame) - 24, 76, 24);
+    self.visibleMenuBarWindow = [[NSWindow alloc] initWithContentRect:windowFrame styleMask:NSWindowStyleMaskBorderless backing:NSBackingStoreBuffered defer:NO];
+    self.visibleMenuBarWindow.opaque = NO;
+    self.visibleMenuBarWindow.backgroundColor = NSColor.clearColor;
+    self.visibleMenuBarWindow.hasShadow = NO;
+    self.visibleMenuBarWindow.level = NSStatusWindowLevel + 2;
+    self.visibleMenuBarWindow.collectionBehavior = NSWindowCollectionBehaviorCanJoinAllSpaces | NSWindowCollectionBehaviorStationary | NSWindowCollectionBehaviorFullScreenAuxiliary;
+    self.visibleMenuBarWindow.releasedWhenClosed = NO;
+    GugulongVisibleMenuView *view = [[GugulongVisibleMenuView alloc] initWithFrame:NSMakeRect(0, 0, 76, 24)];
+    view.controlMenu = menu;
+    view.toolTip = @"咕咕龙 Codex 搭子";
+    self.visibleMenuBarWindow.contentView = view;
+    [self.visibleMenuBarWindow orderFrontRegardless];
+}
+
 - (NSUserDefaults *)defaults { return [NSUserDefaults standardUserDefaults]; }
 
 - (NSMenuItem *)item:(NSString *)title action:(SEL)action {
@@ -368,33 +435,27 @@ typedef void (^CodexUpdateHandler)(PetState state, NSString *sourcePath);
     self.petView.windowMoved = ^{ [weakSelf petDidMove]; };
     [self createBubbleWindow];
     [self applyWindowLevel];
-    // A variable-width item keeps the dedicated silhouette visible while the
-    // short product name makes the control unmistakable on crowded menu bars.
-    self.statusItem = [[NSStatusBar systemStatusBar] statusItemWithLength:NSVariableStatusItemLength];
+    // Keep the item square so it remains visible when the menu bar is crowded.
+    self.statusItem = [[NSStatusBar systemStatusBar] statusItemWithLength:NSSquareStatusItemLength];
+    // A new explicit identity clears the stale off-screen placement left by
+    // earlier builds that changed the status-item width repeatedly.
+    self.statusItem.autosaveName = @"tech.haozi.gugulong.status.v2";
+    self.statusItem.behavior = 0;
     self.statusItem.visible = YES;
     // Load the 1x template resource and let AppKit select its @2x representation.
     // Loading the @2x file as the logical source makes macOS scale it twice on
     // some menu-bar configurations, which can make the mark look faint or absent.
-    NSString *statusImagePath = [[NSBundle mainBundle] pathForResource:@"MenuBarIconTemplate" ofType:@"png"];
-    NSImage *statusImage = [[NSImage alloc] initWithContentsOfFile:statusImagePath];
-    if (!statusImage) {
-        if (@available(macOS 11.0, *)) {
-            statusImage = [NSImage imageWithSystemSymbolName:@"lizard.fill" accessibilityDescription:@"咕咕龙"];
-        }
-    }
-    if (statusImage) {
-        statusImage.template = YES;
-        statusImage.size = NSMakeSize(18, 18);
-        self.statusItem.button.image = statusImage;
-        self.statusItem.button.imagePosition = NSImageLeft;
-        self.statusItem.button.title = @"咕咕龙";
-        self.statusItem.button.font = [NSFont systemFontOfSize:11 weight:NSFontWeightSemibold];
-        self.statusItem.button.accessibilityLabel = @"咕咕龙";
-    } else {
-        self.statusItem.button.title = @"咕咕龙";
-    }
+    // Text is the only status-item rendering path that remains visible on this
+    // Mac's dual-display menu bar. Use a dinosaur glyph as the reliable logo.
+    self.statusItem.button.image = nil;
+    self.statusItem.button.imagePosition = NSNoImage;
+    self.statusItem.button.title = @"🦖";
+    self.statusItem.button.font = [NSFont systemFontOfSize:15];
+    self.statusItem.button.accessibilityLabel = @"咕咕龙";
+    NSMenu *statusMenu = [self buildControlMenu:YES];
+    self.statusItem.menu = statusMenu;
+    dispatch_async(dispatch_get_main_queue(), ^{ [self createVisibleMenuBarWindowWithMenu:statusMenu]; });
     self.statusItem.button.toolTip = @"咕咕龙 Codex 搭子";
-    self.statusItem.menu = [self buildControlMenu:YES];
     [self applyState:PetStateIdle manual:NO];
     if ([[self defaults] boolForKey:@"petVisible"]) [self.petWindow orderFrontRegardless];
     if (![[self defaults] boolForKey:@"welcomeBubbleShown"]) {

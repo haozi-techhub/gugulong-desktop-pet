@@ -1,0 +1,21 @@
+.DS_Store
+**/.DS_Store
+
+# Build outputs and dependencies
+desktop-app/build/
+windows-app/node_modules/
+windows-app/dist/
+
+# Generated workspaces and unrelated pet experiments
+work/
+publish/
+outputs/xiaom-pet/
+outputs/xiaom-pet.zip
+outputs/gugulong-run/
+
+# Release binaries are published as GitHub Release assets.
+release/
+
+# Nested repository metadata from the standalone Codex pet package.
+outputs/gugulong-pet/.git/
+

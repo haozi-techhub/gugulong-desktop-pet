@@ -1,0 +1,26 @@
+:root {
+  font-family: "Microsoft YaHei UI", "Segoe UI", sans-serif;
+  color: #173824;
+  background: #f4f8ef;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; background: radial-gradient(circle at 90% 0%, #e1f7c8, transparent 43%), #f5f8f1; }
+main { padding: 22px; }
+header { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
+header img { width: 52px; height: 52px; border-radius: 12px; box-shadow: 0 4px 12px rgba(24, 73, 37, .18); }
+h1 { margin: 0 0 3px; font-size: 21px; }
+p { margin: 0; color: #5e7465; font-size: 13px; }
+.toggles { border: 1px solid #dce9d5; border-radius: 14px; overflow: hidden; background: rgba(255, 255, 255, .82); }
+.toggles label { min-height: 42px; padding: 0 14px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #e8efe4; font-size: 14px; }
+.toggles label:last-child { border-bottom: 0; }
+input[type="checkbox"] { width: 18px; height: 18px; accent-color: #2d883f; }
+.sizes { margin-top: 14px; }
+.sizes > span { display: block; margin-bottom: 8px; font-size: 13px; font-weight: 700; color: #4b6553; }
+#sizeButtons { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+button { border: 1px solid #cfe1c7; border-radius: 9px; background: white; color: #294c32; min-height: 32px; cursor: pointer; font-weight: 700; }
+button:hover { background: #edf8e6; }
+button.active { border-color: #2f8b43; background: #daf2ce; color: #155d28; }
+footer { margin-top: 16px; display: flex; align-items: center; justify-content: space-between; }
+.primary { padding: 0 17px; background: #287b3a; color: white; border: 0; }
+#version { color: #7d8b80; font-size: 12px; }

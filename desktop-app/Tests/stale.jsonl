@@ -1,0 +1,2 @@
+{"timestamp":"2020-01-01T00:00:00Z","type":"event_msg","payload":{"type":"task_started"}}
+{"timestamp":"2020-01-01T00:00:01Z","type":"event_msg","payload":{"type":"token_count","rate_limits":{"limit_name":"Stale Test","primary":{"used_percent":88,"window_minutes":300,"resets_at":1577840400},"credits":{"has_credits":false,"unlimited":false}}}}

@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>咕咕龙桌宠设置</title>
+  <link rel="stylesheet" href="settings.css">
+</head>
+<body>
+  <main>
+    <header>
+      <img src="../assets/app-icon.png" alt="咕咕龙桌宠">
+      <div>
+        <h1>咕咕龙桌宠设置</h1>
+        <p>桌面上的 Codex 小搭子</p>
+      </div>
+    </header>
+
+    <section class="toggles" aria-label="行为设置">
+      <label><span>始终置顶</span><input type="checkbox" data-key="alwaysOnTop"></label>
+      <label><span>鼠标悬停时大哭</span><input type="checkbox" data-key="hoverCry"></label>
+      <label><span>显示“咕咕嘎嘎”气泡</span><input type="checkbox" data-key="bubbleEnabled"></label>
+      <label><span>跟随 Codex 任务状态</span><input type="checkbox" data-key="codexSync"></label>
+    </section>
+
+    <section class="sizes" aria-label="尺寸设置">
+      <span>桌宠尺寸</span>
+      <div id="sizeButtons">
+        <button data-scale="0.5">50%</button>
+        <button data-scale="0.75">75%</button>
+        <button data-scale="1">100%</button>
+        <button data-scale="1.5">150%</button>
+        <button data-scale="2">200%</button>
+      </div>
+    </section>
+
+    <footer>
+      <button id="showPet" class="primary">显示桌宠</button>
+      <span id="version"></span>
+    </footer>
+  </main>
+  <script src="settings.js"></script>
+</body>
+</html>

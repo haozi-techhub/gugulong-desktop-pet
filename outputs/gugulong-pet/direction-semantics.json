@@ -1,0 +1,117 @@
+{
+  "ok": true,
+  "directions": [
+    {
+      "direction": "000",
+      "verdict": "pass",
+      "expected": "up",
+      "observed": "snout and chin raised; eyes high",
+      "reason": "cardinal up anchor"
+    },
+    {
+      "direction": "022.5",
+      "verdict": "pass",
+      "expected": "up-right",
+      "observed": "head and gaze up-right",
+      "reason": "smooth transition from up to right"
+    },
+    {
+      "direction": "045",
+      "verdict": "pass",
+      "expected": "up-right",
+      "observed": "snout points up-right",
+      "reason": "diagonal gaze is readable"
+    },
+    {
+      "direction": "067.5",
+      "verdict": "pass",
+      "expected": "up-right/right",
+      "observed": "snout turns right while gaze remains elevated",
+      "reason": "approaches right cardinal"
+    },
+    {
+      "direction": "090",
+      "verdict": "pass",
+      "expected": "screen-right",
+      "observed": "snout right, tail trailing left",
+      "reason": "right cardinal anchor"
+    },
+    {
+      "direction": "112.5",
+      "verdict": "pass",
+      "expected": "down-right",
+      "observed": "snout right and slightly down",
+      "reason": "smooth descent after right cardinal"
+    },
+    {
+      "direction": "135",
+      "verdict": "pass",
+      "expected": "down-right",
+      "observed": "head and gaze down-right",
+      "reason": "diagonal down-right is readable"
+    },
+    {
+      "direction": "157.5",
+      "verdict": "pass",
+      "expected": "down-right",
+      "observed": "chin lowers toward down cardinal",
+      "reason": "approaches down cardinal"
+    },
+    {
+      "direction": "180",
+      "verdict": "pass",
+      "expected": "down",
+      "observed": "chin tucked; snout points down",
+      "reason": "cardinal down anchor"
+    },
+    {
+      "direction": "202.5",
+      "verdict": "pass",
+      "expected": "down-left",
+      "observed": "snout left and down; tail trails right",
+      "reason": "leftward descent is clear"
+    },
+    {
+      "direction": "225",
+      "verdict": "pass",
+      "expected": "down-left",
+      "observed": "head and gaze down-left",
+      "reason": "diagonal down-left is readable"
+    },
+    {
+      "direction": "247.5",
+      "verdict": "pass",
+      "expected": "down-left",
+      "observed": "snout left, rising toward left cardinal",
+      "reason": "approaches left cardinal"
+    },
+    {
+      "direction": "270",
+      "verdict": "pass",
+      "expected": "screen-left",
+      "observed": "snout left, tail and body trailing right",
+      "reason": "left cardinal anchor"
+    },
+    {
+      "direction": "292.5",
+      "verdict": "pass",
+      "expected": "up-left",
+      "observed": "snout left and slightly up",
+      "reason": "smooth ascent after left cardinal"
+    },
+    {
+      "direction": "315",
+      "verdict": "pass",
+      "expected": "up-left",
+      "observed": "head and gaze up-left",
+      "reason": "diagonal up-left is readable"
+    },
+    {
+      "direction": "337.5",
+      "verdict": "pass",
+      "expected": "up-left",
+      "observed": "snout left while lifting toward 000",
+      "reason": "returns naturally to up cardinal"
+    }
+  ]
+}

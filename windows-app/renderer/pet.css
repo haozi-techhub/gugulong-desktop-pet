@@ -1,0 +1,34 @@
+:root {
+  color-scheme: light dark;
+}
+
+* {
+  box-sizing: border-box;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  background: transparent;
+}
+
+body {
+  display: grid;
+  place-items: stretch;
+  cursor: grab;
+}
+
+body.dragging {
+  cursor: grabbing;
+}
+
+#pet {
+  width: 100%;
+  height: 100%;
+  display: block;
+}

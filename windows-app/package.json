@@ -1,0 +1,19 @@
+{
+  "name": "gugulong-desktop-pet",
+  "productName": "咕咕龙桌宠",
+  "version": "1.3.2",
+  "description": "咕咕龙 Codex 桌面搭子（Windows 版）",
+  "main": "main.js",
+  "author": "haozi-techhub",
+  "license": "UNLICENSED",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "test": "node tests/self-test.js",
+    "package:windows": "node scripts/package-windows.mjs"
+  },
+  "devDependencies": {
+    "@electron/packager": "20.2.1",
+    "electron": "43.3.0"
+  }
+}

@@ -300,7 +300,6 @@ typedef void (^CodexUpdateHandler)(PetState state, NSString *sourcePath);
 @property(nonatomic) BOOL petHovering;
 @property(nonatomic) CGFloat scale;
 @property(nonatomic, strong) NSStatusItem *statusItem;
-@property(nonatomic, strong) NSWindow *visibleMenuBarWindow;
 @property(nonatomic, strong) NSWindow *settingsWindow;
 @property(nonatomic, strong) CodexSessionWatcher *watcher;
 @property(nonatomic) PetState lastCodexState;
@@ -310,43 +309,7 @@ typedef void (^CodexUpdateHandler)(PetState state, NSString *sourcePath);
 @property(nonatomic, strong) NSDate *lastBubbleShownAt;
 @end
 
-@interface GugulongVisibleMenuView : NSImageView
-@property(nonatomic, strong) NSMenu *controlMenu;
-@end
-
-@implementation GugulongVisibleMenuView
-- (void)mouseDown:(NSEvent *)event {
-    if (self.controlMenu) [self.controlMenu popUpMenuPositioningItem:nil atLocation:NSMakePoint(0, NSMaxY(self.bounds)) inView:self];
-}
-- (void)rightMouseDown:(NSEvent *)event { [self mouseDown:event]; }
-@end
-
-
 @implementation AppDelegate
-
-- (void)createVisibleMenuBarWindowWithMenu:(NSMenu *)menu logo:(NSImage *)logo {
-    NSScreen *screen = NSScreen.mainScreen ?: NSScreen.screens.firstObject;
-    if (!screen) return;
-    NSRect frame = screen.frame;
-    // Place the badge in the wide safe gap between the application menus and
-    // system status icons; do not cover Wi-Fi, battery, or input-method items.
-    NSRect windowFrame = NSMakeRect(NSMinX(frame) + 900, NSMaxY(frame) - 24, 24, 24);
-    self.visibleMenuBarWindow = [[NSWindow alloc] initWithContentRect:windowFrame styleMask:NSWindowStyleMaskBorderless backing:NSBackingStoreBuffered defer:NO];
-    self.visibleMenuBarWindow.opaque = NO;
-    self.visibleMenuBarWindow.backgroundColor = NSColor.clearColor;
-    self.visibleMenuBarWindow.hasShadow = NO;
-    self.visibleMenuBarWindow.level = NSStatusWindowLevel + 2;
-    self.visibleMenuBarWindow.collectionBehavior = NSWindowCollectionBehaviorCanJoinAllSpaces | NSWindowCollectionBehaviorStationary | NSWindowCollectionBehaviorFullScreenAuxiliary;
-    self.visibleMenuBarWindow.releasedWhenClosed = NO;
-    GugulongVisibleMenuView *view = [[GugulongVisibleMenuView alloc] initWithFrame:NSMakeRect(0, 0, 24, 24)];
-    view.controlMenu = menu;
-    view.image = logo;
-    view.imageScaling = NSImageScaleProportionallyUpOrDown;
-    view.imageAlignment = NSImageAlignCenter;
-    view.toolTip = @"咕咕龙 Codex 搭子";
-    self.visibleMenuBarWindow.contentView = view;
-    [self.visibleMenuBarWindow orderFrontRegardless];
-}
 
 - (NSUserDefaults *)defaults { return [NSUserDefaults standardUserDefaults]; }
 
@@ -406,27 +369,28 @@ typedef void (^CodexUpdateHandler)(PetState state, NSString *sourcePath);
     self.petView.windowMoved = ^{ [weakSelf petDidMove]; };
     [self createBubbleWindow];
     [self applyWindowLevel];
-    // Keep the item square so it remains visible when the menu bar is crowded.
     self.statusItem = [[NSStatusBar systemStatusBar] statusItemWithLength:NSSquareStatusItemLength];
-    // A new explicit identity clears the stale off-screen placement left by
-    // earlier builds that changed the status-item width repeatedly.
-    self.statusItem.autosaveName = @"tech.haozi.gugulong.status.v2";
-    self.statusItem.behavior = 0;
     self.statusItem.visible = YES;
-    // Use the selected Gugulong silhouette as a white alpha image. Keep the
-    // status item image-only: no title or emoji fallback is rendered.
-    NSString *statusImagePath = [[NSBundle mainBundle] pathForResource:@"MenuBarIconWhite" ofType:@"png"];
+    // Native NSStatusItem implementation restored from the verified v1.3.2
+    // build. A template image is embedded by AppKit and turns white on this
+    // blue menu bar without any floating overlay window.
+    NSString *statusImagePath = [[NSBundle mainBundle] pathForResource:@"MenuBarIconTemplate" ofType:@"png"];
     NSImage *statusImage = [[NSImage alloc] initWithContentsOfFile:statusImagePath];
-    statusImage.template = NO;
-    statusImage.size = NSMakeSize(18, 18);
-    self.statusItem.button.image = statusImage;
-    self.statusItem.button.imagePosition = NSImageOnly;
-    self.statusItem.button.title = @"";
-    self.statusItem.button.accessibilityLabel = @"咕咕龙";
-    NSMenu *statusMenu = [self buildControlMenu:YES];
-    self.statusItem.menu = statusMenu;
-    dispatch_async(dispatch_get_main_queue(), ^{ [self createVisibleMenuBarWindowWithMenu:statusMenu logo:statusImage]; });
+    if (!statusImage) {
+        if (@available(macOS 11.0, *)) {
+            statusImage = [NSImage imageWithSystemSymbolName:@"lizard.fill" accessibilityDescription:@"咕咕龙"];
+        }
+    }
+    if (statusImage) {
+        statusImage.template = YES;
+        statusImage.size = NSMakeSize(18, 18);
+        self.statusItem.button.image = statusImage;
+        self.statusItem.button.imagePosition = NSImageOnly;
+        self.statusItem.button.title = @"";
+        self.statusItem.button.accessibilityLabel = @"咕咕龙";
+    }
     self.statusItem.button.toolTip = @"咕咕龙 Codex 搭子";
+    self.statusItem.menu = [self buildControlMenu:YES];
     [self applyState:PetStateIdle manual:NO];
     if ([[self defaults] boolForKey:@"petVisible"]) [self.petWindow orderFrontRegardless];
     if (![[self defaults] boolForKey:@"welcomeBubbleShown"]) {

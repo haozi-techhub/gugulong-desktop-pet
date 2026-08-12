@@ -11,7 +11,5 @@ cp "$ROOT/../outputs/gugulong-pet/spritesheet.webp" "$APP/Contents/Resources/spr
 cp "$ROOT/Assets/AppIcon.icns" "$APP/Contents/Resources/AppIcon.icns"
 cp "$ROOT/Assets/MenuBarIconTemplate.png" "$APP/Contents/Resources/MenuBarIconTemplate.png"
 cp "$ROOT/Assets/MenuBarIconTemplate@2x.png" "$APP/Contents/Resources/MenuBarIconTemplate@2x.png"
-cp "$ROOT/Assets/MenuBarIconWhite.png" "$APP/Contents/Resources/MenuBarIconWhite.png"
-cp "$ROOT/Assets/MenuBarIconWhite@2x.png" "$APP/Contents/Resources/MenuBarIconWhite@2x.png"
 codesign --force --deep --sign - "$APP"
 echo "已生成：$APP"
